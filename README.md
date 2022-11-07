@@ -1,4 +1,4 @@
-# WebChecker
+# SSL-Certificate-Checker
 
 ## 介绍
 
@@ -15,13 +15,13 @@ pip install -r requirements.txt
 ### 运行
 
 ```bash
-python web_checker.py
+python checker.py
 ```
 
 ### 示例
 
 ```bash
-$ python web_checker.py 
+$ python checker.py 
 2022-11-07 09:59:01 3510 [INFO] 
 检测域名:packages.cdgeekcamp.com        协议类型:https  网页状态:200    泛域名:*.cdgeekcamp.com     证书有效时间:2022-10-30 23:07:06至2023-01-28 23:07:05   剩余时间:82天13小时8分钟
 2022-11-07 09:59:01 3510 [INFO] 
