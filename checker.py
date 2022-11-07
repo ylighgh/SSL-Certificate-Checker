@@ -34,7 +34,11 @@ def get_scheme(url: str) -> str:
 
 
 def get_web_status_code(url: str) -> int:
-    return requests.get(url).status_code
+    try:
+        status_code = requests.get(url, timeout=3).status_code
+    except Exception:
+        status_code = 1
+    return status_code
 
 
 def format_remain_time(time_remaining: datetime) -> str:
@@ -89,23 +93,28 @@ class WebSite:
         self.scheme = scheme
         self.check_domain = host
         self.status_code = get_web_status_code(hostname)
-
-        if scheme == HTTPS_SCHEME:
-            self.common_domain, self.register_datetime, self.expire_datetime, \
-            self.remain_time = get_certificate_info(host, port)
+        if self.status_code != 1:
+            if scheme == HTTPS_SCHEME:
+                self.common_domain, self.register_datetime, self.expire_datetime, \
+                self.remain_time = get_certificate_info(host, port)
 
     def info(self):
-        if self.scheme == HTTPS_SCHEME:
-            hlog.info(f'\n检测域名:{self.check_domain}\t'
-                      f'协议类型:{self.scheme}\t'
-                      f'网页状态:{self.status_code}\t'
-                      f'泛域名:{self.common_domain}\t'
-                      f'证书有效时间:{self.register_datetime}至{self.expire_datetime}\t'
-                      f'剩余时间:{self.remain_time}')
+        if self.status_code == 1:
+            hlog.warning(f'\n检测域名:{self.check_domain}\t'
+                         f'协议类型:{self.scheme}\t'
+                         f'网页状态:无法访问')
         else:
-            hlog.info(f'\n检测域名:{self.check_domain}\t'
-                      f'协议类型:{self.scheme}\t'
-                      f'网页状态:{self.status_code}')
+            if self.scheme == HTTPS_SCHEME:
+                hlog.info(f'\n检测域名:{self.check_domain}\t'
+                          f'协议类型:{self.scheme}\t'
+                          f'网页状态:{self.status_code}\t'
+                          f'泛域名:{self.common_domain}\t'
+                          f'证书有效时间:{self.register_datetime}至{self.expire_datetime}\t'
+                          f'剩余时间:{self.remain_time}')
+            else:
+                hlog.info(f'\n检测域名:{self.check_domain}\t'
+                          f'协议类型:{self.scheme}\t'
+                          f'网页状态:{self.status_code}')
 
 
 def main():
